@@ -61,11 +61,6 @@ public class MemberService {
     @Transactional
     public MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
-        log.info("================");
-        log.info("memberLoginRequestDto = {}", memberLoginRequestDto.getEmail());
-        log.info("memberLoginRequestDto = {}", memberLoginRequestDto.getPassword());
-        log.info("================");
-
         Member findMember = memberRepository.findByEmail(memberLoginRequestDto.getEmail()).orElseThrow(
                 () -> new RuntimeException("해당 이메일이 존재하지 않습니다.")
         );
@@ -79,11 +74,9 @@ public class MemberService {
 
         if(findRefreshToken.isPresent()) {
             refreshTokenRepository.save(findRefreshToken.get().updateToken(tokenDto.getRefreshToken()));
-            System.out.println("========= true =======");
         } else { // Refresh Token이 없는 경우
             RefreshToken newRefreshToken = new RefreshToken(tokenDto.getRefreshToken(), findMember.getEmail());
             refreshTokenRepository.save(newRefreshToken);
-            System.out.println("========= false =======");
         }
         // header 에 토큰을 담음
         addTokenHeader(response, tokenDto);

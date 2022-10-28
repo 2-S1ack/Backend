@@ -1,7 +1,10 @@
 package com.clone.s1ack.security.jwt;
 
+import com.clone.s1ack.dto.ResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,7 +36,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(accessToken != null) {
             // Access 토큰 이 유효한지
             if (!jwtUtil.tokenValidation(accessToken)) {
-                log.info("JwtAuthFilter.doFilterInternal");
+                log.info("====== JwtAuthFilter.doFilterInternal.accessToken.tokenValidation == false =====");
+                jwtExceptionHandler(response);
                 return;
             }
             // 토큰 검증 완료
@@ -42,7 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         } else if(refreshToken != null) { //
             // refresh 토큰 이 유효한지
             if(!jwtUtil.tokenValidation(refreshToken)) {
-                log.info("JwtAuthFilter.doFilterInternal");
+                log.info("====== JwtAuthFilter.doFilterInternal.refreshToken.tokenValidation == false =====");
+                jwtExceptionHandler(response);
                 return;
             }
             setAuthentication(jwtUtil.getEmailFromToken(refreshToken));
@@ -59,5 +64,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // SecurityContext 에 Authentication 이 있는지 확인하고 있다면 deny 를 하지 않는다.
         Authentication authentication = jwtUtil.createAuthentication(username);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    public void jwtExceptionHandler(HttpServletResponse response) {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        try {
+            String json = new ObjectMapper().writeValueAsString(ResponseDto.fail(HttpStatus.UNAUTHORIZED.value(),null, "TOKEN이 만료되었습니다"));
+            response.getWriter().write(json);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

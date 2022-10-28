@@ -49,7 +49,7 @@ public class WebSecurityConfig {
            cors.setAllowedOriginPatterns(List.of("*"));
            cors.setAllowedMethods(List.of("*"));
            cors.setAllowedHeaders(List.of("*"));
-           cors.addExposedHeader("Access_Token");
+           cors.addExposedHeader("Authorization");
            cors.addExposedHeader("Refresh_Token");
            cors.setAllowCredentials(true);
            return cors;
@@ -69,8 +69,11 @@ public class WebSecurityConfig {
                 .antMatchers( "/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()
+                /**
+                 * 모든 접근은 인증인가가 이루어진 사용자여야 한다.
+                 */
+//                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 

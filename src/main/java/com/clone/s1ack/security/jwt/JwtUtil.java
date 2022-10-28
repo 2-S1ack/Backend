@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +30,12 @@ public class JwtUtil {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public static final String ACCESS_TOKEN = "Access-Token";
-    public static final String REFRESH_TOKEN = "Refresh-Token";
+    public static final String ACCESS_TOKEN = "Authorization";
+    public static final String REFRESH_TOKEN = "Refresh_Token";
+
+    public static final String BEARER_TYPE = "Bearer ";
+
+
     private static final Long ACCESS_TIME = 1000 * 60 * 30L;
     private static final Long REFRESH_TIME = 1000 * 60 * 60 * 2L;
 
@@ -50,7 +55,12 @@ public class JwtUtil {
 
     // header 에서 토큰을 가져오는 기능
     public String getHeaderToken(HttpServletRequest request, String type) {
-        return type.equals("Access") ? request.getHeader(ACCESS_TOKEN) : request.getHeader(REFRESH_TOKEN);
+        String bearerToken = type.equals("Access") ? request.getHeader(ACCESS_TOKEN) : request.getHeader(REFRESH_TOKEN);
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
 
@@ -60,12 +70,10 @@ public class JwtUtil {
     }
 
     public String createToken(String email, String type) {
-        log.info("========= {} Token 생성 =========", type);
-
         Date date = new Date();
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
-        return Jwts.builder()
+        return BEARER_TYPE + Jwts.builder()
                 .setSubject(email) // date.getTime() 현재 시간
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
@@ -94,7 +102,7 @@ public class JwtUtil {
         }
         // DB에 저장한 토큰과 비교
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getEmailFromToken(token));
-        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
+        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken().substring(7));
     }
 
     // 인증 객체 생성
@@ -106,7 +114,6 @@ public class JwtUtil {
     // 토큰에서 username 가져오는 기능
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
-
     }
 
 }
