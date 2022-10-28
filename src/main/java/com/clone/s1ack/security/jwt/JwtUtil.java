@@ -1,6 +1,5 @@
 package com.clone.s1ack.security.jwt;
 
-
 import com.clone.s1ack.domain.RefreshToken;
 import com.clone.s1ack.repository.RefreshTokenRepository;
 import com.clone.s1ack.security.user.UserDetailsServiceImpl;
@@ -14,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -22,23 +22,29 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
-@Slf4j
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    private static final long ACCESS_TIME = 2 * 60 * 60 * 1000L;
-    private static final long REFRESH_TIME = 7 * 24 * 60 * 60 * 1000L;
-    public static final String ACCESS_TOKEN = "Access_Token";
+    public static final String ACCESS_TOKEN = "Authorization";
     public static final String REFRESH_TOKEN = "Refresh_Token";
+
+    public static final String BEARER_TYPE = "Bearer ";
+
+
+    private static final Long ACCESS_TIME = 1000 * 60 * 30L;
+    private static final Long REFRESH_TIME = 1000 * 60 * 60 * 2L;
 
 
     @Value("${jwt.secret.key}")
     private String secretKey;
+
     private Key key;
+
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
@@ -47,24 +53,28 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    // header 토큰을 가져오는 기능
+    // header 에서 토큰을 가져오는 기능
     public String getHeaderToken(HttpServletRequest request, String type) {
-        return type.equals("Access") ? request.getHeader(ACCESS_TOKEN) :request.getHeader(REFRESH_TOKEN);
+        String bearerToken = type.equals("Access") ? request.getHeader(ACCESS_TOKEN) : request.getHeader(REFRESH_TOKEN);
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
+
 
     // 토큰 생성
-    public TokenDto createAllToken(String username) {
-        return new TokenDto(createToken(username, "Access"), createToken(username, "Refresh"));
+    public TokenDto createAllToken(String email) {
+        return new TokenDto(createToken(email, "Access"), createToken(email, "Refresh"));
     }
 
-    public String createToken(String username, String type) {
-
+    public String createToken(String email, String type) {
         Date date = new Date();
-
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
-        return Jwts.builder()
-                .setSubject(username)
+        return BEARER_TYPE + Jwts.builder()
+                .setSubject(email) // date.getTime() 현재 시간
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
@@ -74,24 +84,25 @@ public class JwtUtil {
     // 토큰 검증
     public Boolean tokenValidation(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token);
             return true;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
+        } catch (Exception e) {
+            // throws ExpiredJwtException, UnsupportedJwtException,
+            // MalformedJwtException, SignatureException, IllegalArgumentException
+            log.error("Exception = {}", e);
             return false;
         }
     }
 
     // refreshToken 토큰 검증
     public Boolean refreshTokenValidation(String token) {
-
         // 1차 토큰 검증
-        if(!tokenValidation(token)) return false;
-
-        // DB에 저장한 토큰 비교
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getUsernameFromToken(token));
-
-        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
+        if(!tokenValidation(token)) {
+            return false;
+        }
+        // DB에 저장한 토큰과 비교
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getEmailFromToken(token));
+        return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken().substring(7));
     }
 
     // 인증 객체 생성
@@ -100,8 +111,9 @@ public class JwtUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    // 토큰에서 email 가져오는 기능
-    public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+    // 토큰에서 username 가져오는 기능
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJwt(token).getBody().getSubject();
     }
+
 }

@@ -30,6 +30,7 @@ public class WebSecurityConfig {
     //password를 암호화 하지않으면 spring security가 접근을 허가하지 않는다.
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // 비밀번호 암호화 방식 BCrypt
         return new BCryptPasswordEncoder();
     }
 
@@ -48,7 +49,7 @@ public class WebSecurityConfig {
            cors.setAllowedOriginPatterns(List.of("*"));
            cors.setAllowedMethods(List.of("*"));
            cors.setAllowedHeaders(List.of("*"));
-           cors.addExposedHeader("Access_Token");
+           cors.addExposedHeader("Authorization");
            cors.addExposedHeader("Refresh_Token");
            cors.setAllowCredentials(true);
            return cors;
@@ -64,12 +65,15 @@ public class WebSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/signup").permitAll()
+                .antMatchers("/api/signup").permitAll()
                 .antMatchers( "/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
 
-                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()
+                /**
+                 * 모든 접근은 인증인가가 이루어진 사용자여야 한다.
+                 */
+//                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
