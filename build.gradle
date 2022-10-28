@@ -1,7 +1,15 @@
+buildscript { // 동적쿼리
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'java'
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+
 }
 
 group = 'com.clone'
@@ -32,6 +40,12 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+
+
+	// querydsl 이놈
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+
 	//aws
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
@@ -43,4 +57,27 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+//이놈
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl { //동적쿼리
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+
+sourceSets { //동적쿼리
+	main.java.srcDir querydslDir
+}
+
+configurations { // 동적쿼리
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	querydsl.extendsFrom compileClasspath
+}
+
+compileQuerydsl { // 동적쿼리
+	options.annotationProcessorPath = configurations.querydsl
 }
