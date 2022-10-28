@@ -30,6 +30,7 @@ public class WebSecurityConfig {
     //password를 암호화 하지않으면 spring security가 접근을 허가하지 않는다.
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // 비밀번호 암호화 방식 BCrypt
         return new BCryptPasswordEncoder();
     }
 
@@ -64,7 +65,7 @@ public class WebSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/signup").permitAll()
+                .antMatchers("/api/signup").permitAll()
                 .antMatchers( "/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
 
