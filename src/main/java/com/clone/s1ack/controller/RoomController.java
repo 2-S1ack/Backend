@@ -3,6 +3,7 @@ package com.clone.s1ack.controller;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.MemberRoom;
 import com.clone.s1ack.domain.Room;
+import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,15 @@ public class RoomController {
 
     private final RoomService roomService;
     private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+
     private Member member = null;
 
     @PostConstruct
     //의존관게 주입완료되면 실행되는 코드
     private void init() {
-        member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
+        member = new Member("jae", "email@co.kr", passwordEncoder.encode("blabla"));
+        memberRepository.save(member);
     }
 
     /**
@@ -41,9 +45,10 @@ public class RoomController {
     /**
      * 1. 모든 대화방 목록 조회
      */
-    @GetMapping("/room")
+    @GetMapping("/rooms")
     @ResponseBody
     public List<Room> rooms() {
+        System.out.println("RoomController.rooms");
         /**
          * return ResponseDto.success(blabla);
          */
@@ -56,6 +61,7 @@ public class RoomController {
     @GetMapping("/room/{roomId}")
     @ResponseBody
     public Room roomInfo(@PathVariable Long roomId) {
+        System.out.println("RoomController.roomInfo");
         return roomService.findOneRoom(roomId);
     }
 
@@ -68,9 +74,20 @@ public class RoomController {
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
                                  @RequestBody String desUserEmail,
                                  Model model) {
+        System.out.println("RoomController.createRoom");
         /**
          * 팀원 추가를 눌렀을 때 수행됨
          */
         return roomService.createRoom(member, desUserEmail);
     }
+
+//    @GetMapping("/room/enter/{roomId}") // /root/enter/1
+//    @ResponseBody
+//    public String roomEnter(@PathVariable Long roomId, @RequestParam String msg) {
+//        System.out.println("RoomController.roomInfo");
+//        System.out.println("roomId = " + roomId);
+//        System.out.println("msg = " + msg);
+//
+//        return "roomEnter";
+//    }
 }
