@@ -31,4 +31,16 @@ public class MemberRoom extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Room room;
 
+    /**
+     * 수신자
+     * subscriber
+     */
+    @Column(nullable = false)
+    private String desUserEmail;
+
+    public MemberRoom(Member member, Room room, String desUserEmail) {
+        this.member = member;
+        this.room = room;
+        this.desUserEmail = desUserEmail;
+    }
 }

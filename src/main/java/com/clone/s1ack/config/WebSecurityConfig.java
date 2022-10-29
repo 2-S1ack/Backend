@@ -58,7 +58,6 @@ public class WebSecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPointException);
 
-
         http.formLogin().disable();
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -67,6 +66,10 @@ public class WebSecurityConfig {
                 .antMatchers("/api/signup").permitAll()
                 .antMatchers( "/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
+                /**
+                 * temp: chat for chat
+                 */
+                .antMatchers("/**").permitAll()
 
 //                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()

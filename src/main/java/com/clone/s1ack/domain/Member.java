@@ -30,6 +30,12 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    public Member(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
     public Member(MemberRequestDto.MemberSignupRequestDto memberSignupRequestDto) {
         this.username = memberSignupRequestDto.getUsername();
         this.email = memberSignupRequestDto.getEmail();

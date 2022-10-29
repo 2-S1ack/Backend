@@ -7,12 +7,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Builder
+@NoArgsConstructor
 public class Room extends BaseTimeEntity {
 
     @Id
@@ -22,4 +23,8 @@ public class Room extends BaseTimeEntity {
     @Column(nullable = false)
     private String roomName;
 
+    public Room(String roomName) {
+//        this.roomName = UUID.randomUUID().toString();;
+        this.roomName = roomName;
+    }
 }

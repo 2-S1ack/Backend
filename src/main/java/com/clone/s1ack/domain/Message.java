@@ -39,7 +39,7 @@ public class Message extends BaseTimeEntity {
      * 수신자
      * subscriber
      */
-    @Column(nullable = false)
-    private String desUsername;
+//    @Column(nullable = false)
+//    private String desUsername;
 
 }
