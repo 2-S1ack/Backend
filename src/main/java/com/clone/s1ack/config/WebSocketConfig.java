@@ -12,8 +12,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // React 에서 new SockJS("/ws/chat") 을 했을 때 새로운 핸드쉐이크 커넥션(WebSocket 에 연결)을 생성할때
         registry.addEndpoint("/chat") // SockJS 연결 주소
-                .setAllowedOrigins("*");
-//                .withSockJS();
+//                .setAllowedOrigins("*")
+                .withSockJS();
         // URL: ws://localhost:8080/chat
     }
 

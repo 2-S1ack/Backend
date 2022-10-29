@@ -42,4 +42,10 @@ public class Message extends BaseTimeEntity {
 //    @Column(nullable = false)
 //    private String desUsername;
 
+
+    public Message(String content, Room room, Member member) {
+        this.content = content;
+        this.room = room;
+        this.member = member;
+    }
 }
