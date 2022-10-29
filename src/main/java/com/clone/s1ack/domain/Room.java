@@ -22,7 +22,4 @@ public class Room extends BaseTimeEntity {
     @Column(nullable = false)
     private String roomName;
 
-    public Room(String roomName) {
-        this.roomName = roomName;
-    }
 }

@@ -22,21 +22,24 @@ public class Message extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
-    private String desUsername;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
     private Room room;
 
+    /**
+     * 송신자
+     * publisher(sender)
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public Message(String content, String desUsername, Room room, Member member) {
-        this.content = content;
-        this.desUsername = desUsername;
-        this.room = room;
-        this.member = member;
-    }
+    /**
+     * 수신자
+     * subscriber
+     */
+    @Column(nullable = false)
+    private String desUsername;
+
 }

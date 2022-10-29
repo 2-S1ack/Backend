@@ -8,8 +8,7 @@ plugins {
 	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	id 'java'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
-
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10" // 동적쿼리
 }
 
 group = 'com.clone'
@@ -33,19 +32,19 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-
-	// querydsl 이놈
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
+//	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	//aws
 //	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// querydsl
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	//jwt
 	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
@@ -57,25 +56,30 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
-//이놈
+/**
+ * queryDSL start
+ */
 def querydslDir = "$buildDir/generated/querydsl"
 
-querydsl { //동적쿼리
+querydsl {
 	jpa = true
 	querydslSourcesDir = querydslDir
 }
 
-sourceSets { //동적쿼리
+sourceSets {
 	main.java.srcDir querydslDir
 }
 
-configurations { // 동적쿼리
+configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
 	querydsl.extendsFrom compileClasspath
 }
 
-compileQuerydsl { // 동적쿼리
+compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
+/**
+ * queryDSL end
+ */

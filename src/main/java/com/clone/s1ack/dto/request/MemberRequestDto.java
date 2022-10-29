@@ -3,7 +3,6 @@ package com.clone.s1ack.dto.request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.validation.constraints.Email;
@@ -43,7 +42,6 @@ public class MemberRequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class MemberLoginRequestDto {
         @NotBlank
         @Email

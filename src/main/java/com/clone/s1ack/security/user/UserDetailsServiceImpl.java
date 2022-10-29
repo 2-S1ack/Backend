@@ -17,9 +17,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final MemberRepository memberRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username){
+    public UserDetails loadUserByUsername(String email){
 
-        Member member = memberRepository.findByUsername(username).orElseThrow(
+        Member member = memberRepository.findByEmail(email).orElseThrow(
                 ()-> new UsernameNotFoundException("Account 가 존재하지 않습니다.")
         );
 

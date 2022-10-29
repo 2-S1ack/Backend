@@ -2,6 +2,9 @@ package com.clone.s1ack.service;
 
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.RefreshToken;
+import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.dto.request.MemberRequestDto;
+import com.clone.s1ack.dto.response.MemberResponseDto;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.RefreshTokenRepository;
 import com.clone.s1ack.security.jwt.JwtUtil;
@@ -14,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
-
-import static com.clone.s1ack.dto.request.MemberRequestDto.*;
-import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 
 @Service
 @Slf4j
@@ -32,7 +32,7 @@ public class MemberService {
 
     //회원가입
     @Transactional
-    public MemberAuthResponseDto signup(MemberSignupRequestDto memberSignupRequestDto) {
+    public MemberResponseDto.MemberAuthResponseDto signup(MemberRequestDto.MemberSignupRequestDto memberSignupRequestDto) {
         if(memberRepository.findByUsername(memberSignupRequestDto.getUsername()).isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
@@ -50,16 +50,16 @@ public class MemberService {
         Member savedMember = new Member(memberSignupRequestDto);
         memberRepository.save(savedMember);
 
-        return new MemberAuthResponseDto(savedMember);
+        return new MemberResponseDto.MemberAuthResponseDto(savedMember);
     }
 
-    private void passwordEncode(MemberSignupRequestDto memberSignupRequestDto) {
+    private void passwordEncode(MemberRequestDto.MemberSignupRequestDto memberSignupRequestDto) {
         String encodedPassword = passwordEncoder.encode(memberSignupRequestDto.getPassword());
         memberSignupRequestDto.setEncodePassword(encodedPassword);
     }
 
     @Transactional
-    public MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
+    public MemberResponseDto.MemberAuthResponseDto login(MemberRequestDto.MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
         Member findMember = memberRepository.findByEmail(memberLoginRequestDto.getEmail()).orElseThrow(
                 () -> new RuntimeException("해당 이메일이 존재하지 않습니다.")
@@ -78,10 +78,9 @@ public class MemberService {
             RefreshToken newRefreshToken = new RefreshToken(tokenDto.getRefreshToken(), findMember.getEmail());
             refreshTokenRepository.save(newRefreshToken);
         }
-        // header 에 토큰을 담음
         addTokenHeader(response, tokenDto);
 
-        return new MemberAuthResponseDto(findMember);
+        return new MemberResponseDto.MemberAuthResponseDto(findMember);
     }
 
     private void addTokenHeader(HttpServletResponse response, TokenDto tokenDto) {
@@ -90,6 +89,7 @@ public class MemberService {
     }
 
 //    public String logout(Member member) {
+//        refreshTokenRepository.deleteByMemberUsername(member.getUsername());
 //        return "로그아웃 완료";
 //    }
 }

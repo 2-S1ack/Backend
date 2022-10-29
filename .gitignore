@@ -27,6 +27,7 @@ out/
 !**/src/test/**/out/
 
 ### appication files ###
+**/application.yml
 **/application-aws.yml
 **/application-security.yml
 

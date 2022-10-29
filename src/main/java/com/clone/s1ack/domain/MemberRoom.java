@@ -31,8 +31,4 @@ public class MemberRoom extends BaseTimeEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Room room;
 
-    public MemberRoom(Member member, Room room) {
-        this.member = member;
-        this.room = room;
-    }
 }
