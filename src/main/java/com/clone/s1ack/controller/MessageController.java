@@ -4,6 +4,7 @@ import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
 import com.clone.s1ack.dto.HelloMessage;
+import com.clone.s1ack.dto.request.WebSocketRequestDto;
 import com.clone.s1ack.dto.response.WebSocketResponseDto;
 import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
