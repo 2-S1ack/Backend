@@ -1,88 +1,54 @@
 package com.clone.s1ack.controller;
 
-import com.clone.s1ack.domain.Member;
-import com.clone.s1ack.domain.Message;
-import com.clone.s1ack.domain.Room;
-import com.clone.s1ack.dto.HelloMessage;
-import com.clone.s1ack.dto.request.WebSocketRequestDto;
-import com.clone.s1ack.dto.response.WebSocketResponseDto;
-import com.clone.s1ack.repository.MessageRepository;
-import com.clone.s1ack.repository.RoomRepository;
+import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.HtmlUtils;
 
-import javax.annotation.PostConstruct;
-
-import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
-import static com.clone.s1ack.dto.response.WebSocketResponseDto.*;
+import static com.clone.s1ack.dto.request.WebSocketRequestDto.MsgContentRequestDto;
+import static com.clone.s1ack.dto.response.WebSocketResponseDto.MsgContentResponseDto;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class MessageController {
 
-    private final SimpMessageSendingOperations sendingOperations;
-    private final RoomRepository roomRepository;
-    private final MessageRepository messageRepository;
+//    private final SimpMessageSendingOperations sendingOperations;
+    private final MessageService messageService;
 
-    private final PasswordEncoder passwordEncoder;
-    private Member member = null;
-
-    @PostConstruct
-    //의존관계 주입완료되면 실행되는 코드
-    private void init() {
-        System.out.println("MessageController.init");
-        member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
-    }
-
-    @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
     // messageMapping 메서드가 모두 완수되고,
     // @SendTo 어노테이션 경로가 app.js측 경로와 맞물려서 수신됨.
+
+    // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
+    @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
     @SendTo("/sub/chat/room/{roomId}")
     @ResponseBody
-    // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
-    public MsgContentResponseDto sendMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {
-        System.out.println("==============");
-        System.out.println("MessageController.sendMessage");
-        System.out.println("msg = " + msg.toString());
-        System.out.println("roomId = " + roomId);
-        System.out.println("==============");
+    public ResponseDto<MsgContentResponseDto> requiredMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {
+        log.info("============");
+        log.info("MessageController.sendMessage");
+        log.info("msg = {}, roomId = {}", msg.toString(), roomId);
+        log.info("============");
 
-        //룸아이디 Long타입으로 변환
-        Long convertedRoomId = Long.valueOf(roomId);
-
-        // roomRepository에서 converedRommId값을 기준으로 조회하고, 있으면 findRoom 변수에 할당해준다. (예외처리도 해줌)
-        Room findRoom = roomRepository.findById(convertedRoomId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 방입니다.")
-        );
-
-        Message message = new Message(msg.getName(), findRoom, member,"vugil@naver.com");
-        messageRepository.save(message);
-
-        return new MsgContentResponseDto(convertedRoomId, msg, findRoom, message);
-//        sendingOperations.convertAndSend("/sub/chat/room/{roomId}", msg);
+        return ResponseDto.success(messageService.sendMessage(msg, roomId
+//                                    , desUsername
+                ));
     }
 
-
-
-
-
-    @MessageMapping("/hello") // 목적지가 path와 일치하는 메시지를 수신했을경우 해당 메서드를 호출
-    @SendTo("/topic/greetings") // 해당 path의 모든 구독자들에게 반환값이 브로드캐스트된다
-    public String greeting(@RequestBody HelloMessage helloMessage) throws Exception {
-        System.out.println("helloMessage.getName() = " + helloMessage.getName());
-        Thread.sleep(3000); // 3초 쉬었다가 전환되도록 지연처리
-        return HtmlUtils.htmlEscape(helloMessage.getName());
-
+    /**
+     * 테스트 용도
+     */
+//    @MessageMapping("/hello") // 목적지가 path와 일치하는 메시지를 수신했을경우 해당 메서드를 호출
+//    @SendTo("/topic/greetings") // 해당 path의 모든 구독자들에게 반환값이 브로드캐스트된다
+//    public String greeting(@RequestBody HelloMessage helloMessage) throws Exception {
+//        System.out.println("helloMessage.getName() = " + helloMessage.getName());
+//        Thread.sleep(3000); // 3초 쉬었다가 전환되도록 지연처리
+//        return HtmlUtils.htmlEscape(helloMessage.getName());
+//
 //        return new Greeting(HtmlUtils.htmlEscape(helloMessage.getName()));
-    }
+//    }
 }
