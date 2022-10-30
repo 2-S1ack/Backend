@@ -39,13 +39,14 @@ public class Message extends BaseTimeEntity {
      * 수신자
      * subscriber
      */
-//    @Column(nullable = false)
-//    private String desUsername;
+    @Column(nullable = false)
+    private String desUsername;
 
 
-    public Message(String content, Room room, Member member) {
+    public Message(String content, Room room, Member member, String desUsername) {
         this.content = content;
         this.room = room;
         this.member = member;
+        this.desUsername = desUsername;
     }
 }
