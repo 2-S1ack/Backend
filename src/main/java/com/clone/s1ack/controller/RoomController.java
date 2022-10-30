@@ -1,6 +1,7 @@
 package com.clone.s1ack.controller;
 
 import com.clone.s1ack.domain.Member;
+import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.service.RoomService;
@@ -67,6 +68,11 @@ public class RoomController {
          * 팀원 추가를 눌렀을 때 수행됨
          */
         return roomService.createRoom();
+    }
+
+    @GetMapping("/search")
+    public List<Message> searchMessage(@RequestParam String message) {
+        return roomService.searchMessage(message);
     }
 
 //    @GetMapping("/room/enter/{roomId}") // /root/enter/1
