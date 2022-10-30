@@ -20,11 +20,4 @@ public class Room extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String roomName;
-
-    public Room(String roomName) {
-//        this.roomName = UUID.randomUUID().toString();;
-        this.roomName = roomName;
-    }
 }

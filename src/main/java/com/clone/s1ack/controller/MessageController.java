@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,9 +44,10 @@ public class MessageController {
         member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
     }
 
-    @MessageMapping("/chat/message/{roomId}") // /topic/chat/message/1
-    @SendTo("/topic/greetings")
+    @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
+    @SendTo("/sub/chat/room/{roomId}") // messageMapping 메서드가 모두 완수되고, @SendTo 어노테이션 경로가 app.js측 경로와 맞물려서 수신됨.
     @ResponseBody
+    // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
     public MsgContentResponseDto sendMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {
         System.out.println("==============");
         System.out.println("MessageController.sendMessage");
@@ -53,17 +55,24 @@ public class MessageController {
         System.out.println("roomId = " + roomId);
         System.out.println("==============");
 
+        //룸아이디 Long타입으로 변환
         Long convertedRoomId = Long.valueOf(roomId);
 
+        // roomRepository에서 @DestinationVariable으로 찾아온 값을 조회한다. (예외처리도 해줌)
         Room findRoom = roomRepository.findById(convertedRoomId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 방입니다.")
         );
-        Message message = new Message("send Message", findRoom, member);
+
+        Message message = new Message(msg.getName(), findRoom, member,"vugil@naver.com");
         messageRepository.save(message);
 
         return new MsgContentResponseDto(convertedRoomId, msg, findRoom, message);
 //        sendingOperations.convertAndSend("/topic/chat/room/1", msg);
     }
+
+
+
+
 
     @MessageMapping("/hello") // 목적지가 path와 일치하는 메시지를 수신했을경우 해당 메서드를 호출
     @SendTo("/topic/greetings") // 해당 path의 모든 구독자들에게 반환값이 브로드캐스트된다

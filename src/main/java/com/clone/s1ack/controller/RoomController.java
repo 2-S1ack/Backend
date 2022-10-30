@@ -1,20 +1,15 @@
 package com.clone.s1ack.controller;
 
 import com.clone.s1ack.domain.Member;
-import com.clone.s1ack.domain.MemberRoom;
 import com.clone.s1ack.domain.Room;
 import com.clone.s1ack.repository.MemberRepository;
-import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @Controller
@@ -64,7 +59,7 @@ public class RoomController {
      */
     @PostMapping("/room")
     @ResponseBody
-    public MemberRoom createRoom(
+    public Room createRoom(
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
                                  @RequestBody String desUserEmail,
                                  Model model) {
@@ -72,7 +67,7 @@ public class RoomController {
         /**
          * 팀원 추가를 눌렀을 때 수행됨
          */
-        return roomService.createRoom(member, desUserEmail);
+        return roomService.createRoom();
     }
 
 //    @GetMapping("/room/enter/{roomId}") // /root/enter/1
