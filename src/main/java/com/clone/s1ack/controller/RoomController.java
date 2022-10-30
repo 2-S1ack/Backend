@@ -28,12 +28,6 @@ public class RoomController {
 
     private Member member = null;
 
-    @PostConstruct
-    //의존관게 주입완료되면 실행되는 코드
-    private void init() {
-        member = new Member("jae", "email@co.kr", passwordEncoder.encode("blabla"));
-        memberRepository.save(member);
-    }
 
     /**
      * 필요한 API
