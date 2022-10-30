@@ -29,6 +29,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // Client(publisher)에서 보낸 메세지를 받을 경로
         registry.setApplicationDestinationPrefixes("/pub");
-
     }
 }
+

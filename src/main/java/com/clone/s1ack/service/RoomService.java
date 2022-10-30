@@ -1,6 +1,8 @@
 package com.clone.s1ack.service;
 
+import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
+import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,8 @@ import java.util.List;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+
+    private final MessageRepository messageRepository;
 
     /**
      * 모든 대화 목록 불러오기
@@ -46,6 +50,12 @@ public class RoomService {
         roomRepository.save(room);
 
         return room;
+    }
+
+    @Transactional
+    public List<Message> searchMessage(String message) {
+
+        return messageRepository.findByKeyword(message);
     }
 
     /**
