@@ -29,7 +29,7 @@ public class MemberController {
     public ResponseDto<MemberResponseDto.MemberAuthResponseDto> login(@RequestBody MemberRequestDto.MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
         return ResponseDto.success(memberService.login(memberLoginRequestDto, response));
     }
-//
+
 //    //로그아웃
 //    @PostMapping
 //    public HttpHeaders setHeaders() {

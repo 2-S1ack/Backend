@@ -35,6 +35,13 @@ public class MessageController {
     private final PasswordEncoder passwordEncoder;
     private Member member = null;
 
+    @PostConstruct
+    //의존관계 주입완료되면 실행되는 코드
+    private void init() {
+        System.out.println("MessageController.init");
+        member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
+    }
+
     @MessageMapping("/chat/message/{roomId}") // /topic/chat/message/1
     @SendTo("/topic/greetings")
     @ResponseBody
@@ -55,13 +62,6 @@ public class MessageController {
 
         return new MsgContentResponseDto(convertedRoomId, msg, findRoom, message);
 //        sendingOperations.convertAndSend("/topic/chat/room/1", msg);
-    }
-
-    @PostConstruct
-    //의존관게 주입완료되면 실행되는 코드
-    private void init() {
-        System.out.println("MessageController.init");
-        member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
     }
 
     @MessageMapping("/hello") // 목적지가 path와 일치하는 메시지를 수신했을경우 해당 메서드를 호출
