@@ -61,8 +61,7 @@ public class RoomController {
     @ResponseBody
     public Room createRoom(
 //            @AuthenticationPrincipal UserDetailsImpl userDetails,
-                                 @RequestBody String desUserEmail,
-                                 Model model) {
+            ) {
         System.out.println("RoomController.createRoom");
         /**
          * 팀원 추가를 눌렀을 때 수행됨
