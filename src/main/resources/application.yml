@@ -1,9 +1,8 @@
-
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-#    url: jdbc:h2:tcp://localhost/~/s1ack
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:tcp://localhost/~/s1ack
+#    url: jdbc:h2:mem:testdb
     username: sa
     password:
 
@@ -15,7 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-    #      ddl-auto: update
+#          ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -45,5 +44,5 @@ server:
       enabled: true
       force: true
 
-profiles:
-  include: "aws"
+#profiles:
+#  include: "aws"
