@@ -45,7 +45,9 @@ public class MessageController {
     }
 
     @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
-    @SendTo("/sub/chat/room/{roomId}") // messageMapping 메서드가 모두 완수되고, @SendTo 어노테이션 경로가 app.js측 경로와 맞물려서 수신됨.
+    // messageMapping 메서드가 모두 완수되고,
+    // @SendTo 어노테이션 경로가 app.js측 경로와 맞물려서 수신됨.
+    @SendTo("/sub/chat/room/{roomId}")
     @ResponseBody
     // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
     public MsgContentResponseDto sendMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {
@@ -58,7 +60,7 @@ public class MessageController {
         //룸아이디 Long타입으로 변환
         Long convertedRoomId = Long.valueOf(roomId);
 
-        // roomRepository에서 @DestinationVariable으로 찾아온 값을 조회한다. (예외처리도 해줌)
+        // roomRepository에서 converedRommId값을 기준으로 조회하고, 있으면 findRoom 변수에 할당해준다. (예외처리도 해줌)
         Room findRoom = roomRepository.findById(convertedRoomId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 방입니다.")
         );
@@ -67,7 +69,7 @@ public class MessageController {
         messageRepository.save(message);
 
         return new MsgContentResponseDto(convertedRoomId, msg, findRoom, message);
-//        sendingOperations.convertAndSend("/topic/chat/room/1", msg);
+//        sendingOperations.convertAndSend("/sub/chat/room/{roomId}", msg);
     }
 
 
