@@ -58,5 +58,13 @@ public class WebSocketRequestDto {
     @Setter
     public static class MsgContentRequestDto {
         private String name;
+//        private String desUsername;
+//        private String desEmail;
+//        private Long desUserId;
+//
+//        public MsgContentRequestDto(String name, String desUsername) {
+//            this.name = name;
+//            this.desUsername = desUsername;
+//        }
     }
 }

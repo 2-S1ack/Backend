@@ -67,6 +67,6 @@ $(function () {
         // 이 메시지는 GreetingController의 greeting() 메서드로 전달된다
         // stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
 
-        stompClient.send("/app/chat/message/1", {}, JSON.stringify({'name': $("#name").val()}));
+        stompClient.send("/pub/chat/message/1", {}, JSON.stringify({'name': $("#name").val()}));
     });
 });
