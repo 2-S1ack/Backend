@@ -7,6 +7,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.Column;
 import javax.persistence.Lob;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,13 +43,11 @@ public class WebSocketRequestDto {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RoomDto {
+    public static class CreateRoomDto {
 
         @Column(nullable = false)
-        private String roomName;
-
-        //WebSocketSession은 Spring에서 Websocket Connection이 맺어진 세션
-        private Set<WebSocketSession> sessions = new HashSet<>();
+        @Email
+        private String desEmail;
     }
 
     @Getter

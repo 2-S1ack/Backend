@@ -11,11 +11,23 @@ public class MemberResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MemberAuthResponseDto {
+        private Long id;
+        private String email;
         private String username;
 
-        public MemberAuthResponseDto(Member findMember) {
-            this.username = findMember.getUsername();
+        public MemberAuthResponseDto(Member savedMember) {
+            this.id = savedMember.getId();
+            this.email = savedMember.getEmail();
+            this.username = savedMember.getUsername();
         }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AllRoomResponseDto {
+        private Long id;
+        private String desUsername;
     }
 
 

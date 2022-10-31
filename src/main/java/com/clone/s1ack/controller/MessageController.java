@@ -25,7 +25,7 @@ public class MessageController {
     // @SendTo 어노테이션 경로가 app.js측 경로와 맞물려서 수신됨.
 
     // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
-    @MessageMapping("/pub/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
+    @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
     @SendTo("/sub/chat/room/{roomId}")
     @ResponseBody
     public ResponseDto<MsgContentResponseDto> requiredMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {

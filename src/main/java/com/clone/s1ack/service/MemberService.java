@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 
 @Service
 @Slf4j
@@ -35,7 +36,7 @@ public class MemberService {
 
     //회원가입
     @Transactional
-    public MemberResponseDto.MemberAuthResponseDto signup(MemberSignupRequestDto memberSignupRequestDto) {
+    public MemberAuthResponseDto signup(MemberSignupRequestDto memberSignupRequestDto) {
         if(memberRepository.findByUsername(memberSignupRequestDto.getUsername()).isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
@@ -53,7 +54,7 @@ public class MemberService {
         Member savedMember = new Member(memberSignupRequestDto);
         memberRepository.save(savedMember);
 
-        return new MemberResponseDto.MemberAuthResponseDto(savedMember);
+        return new MemberAuthResponseDto(savedMember);
     }
 
     private void passwordEncode(MemberSignupRequestDto memberSignupRequestDto) {
@@ -62,7 +63,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponseDto.MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
+    public MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
         Member findMember = memberRepository.findByEmail(memberLoginRequestDto.getEmail()).orElseThrow(
                 () -> new RuntimeException("해당 이메일은 존재하지 않습니다.")
@@ -83,7 +84,7 @@ public class MemberService {
         }
         addTokenHeader(response, tokenDto);
 
-        return new MemberResponseDto.MemberAuthResponseDto(findMember);
+        return new MemberAuthResponseDto(findMember);
     }
 
     private void addTokenHeader(HttpServletResponse response, TokenDto tokenDto) {

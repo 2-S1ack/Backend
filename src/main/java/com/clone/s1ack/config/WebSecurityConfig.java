@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                 /**
                  * temp: chat for chat
                  */
-                .antMatchers("/**").permitAll()
+//                .antMatchers("/**").permitAll()
 
 //                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()

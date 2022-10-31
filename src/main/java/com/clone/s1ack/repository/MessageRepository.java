@@ -8,4 +8,9 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long>, MessageRepositoryCustom {
 
+    List<Message> findAllByDesUsername(String desUsername);
+    List<Message> findByRoomId(Long id);
+
+
+//    @Query("select from Member m, Room r where ")
 }

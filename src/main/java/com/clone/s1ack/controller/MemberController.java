@@ -21,13 +21,17 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    // 회원가입
+    /**
+     * 회원가입
+     */
     @PostMapping("/signup")
     public ResponseDto<MemberResponseDto.MemberAuthResponseDto> registerMember(@RequestBody @Valid MemberSignupRequestDto memberRequestDto) {
         return ResponseDto.success(memberService.signup(memberRequestDto));
     }
 
-    //로그인
+    /**
+     * 로그인
+     */
     @PostMapping("/login")
     public ResponseDto<MemberResponseDto.MemberAuthResponseDto> login(@RequestBody MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
         return ResponseDto.success(memberService.login(memberLoginRequestDto, response));
