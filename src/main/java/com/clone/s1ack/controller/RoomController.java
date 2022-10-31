@@ -28,11 +28,6 @@ import static com.clone.s1ack.dto.response.RoomResponseDto.*;
 public class RoomController {
 
     private final RoomService roomService;
-    private final PasswordEncoder passwordEncoder;
-    private final MemberRepository memberRepository;
-
-    private Member member = null;
-
 
     /**
      * 필요한 API

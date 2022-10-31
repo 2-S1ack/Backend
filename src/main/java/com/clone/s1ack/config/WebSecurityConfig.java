@@ -37,7 +37,16 @@ public class WebSecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         //h2-console 사용에 대한 허용 (CSRF, FrameOptions 무시)
         return (web) -> web.ignoring()
-                .antMatchers("/h2-console/**");
+                .antMatchers("/h2-console/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/configuration/ui",
+                                        "/swagger-resources/**",
+                                        "/swagger-ui/**",
+                                        "/configuration/security",
+                                        "/swagger-ui.html",
+                                        "/webjars/**",
+                                        "/swagger/**");
     }
 
     @Bean
@@ -66,10 +75,8 @@ public class WebSecurityConfig {
                 .antMatchers("/api/signup").permitAll()
                 .antMatchers( "/api/login").permitAll()
                 .antMatchers("/api/logout").permitAll()
-                /**
-                 * temp: chat for chat
-                 */
-//                .antMatchers("/**").permitAll()
+                .antMatchers("/api/member/duplication/**").permitAll()
+                .antMatchers("/").permitAll()
 
 //                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()

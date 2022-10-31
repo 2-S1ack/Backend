@@ -1,10 +1,14 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/s1ack
-#    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://database-demo.cqqqbp9lubnd.ap-northeast-2.rds.amazonaws.com:3306/demo?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: admin
+    password: tjdwo1997!
+#    driver-class-name: org.h2.Driver
+#    url: jdbc:h2:tcp://localhost/~/s1ack
+##    url: jdbc:h2:mem:testdb
+#    username: sa
+#    password:
 
   h2:
     console:
@@ -15,8 +19,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
-#          ddl-auto: update
+#      ddl-auto: create
+          ddl-auto: update
     properties:
       hibernate:
         show_sql: true
