@@ -11,12 +11,15 @@ import com.clone.s1ack.security.jwt.JwtUtil;
 import com.clone.s1ack.security.jwt.TokenDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
+
+import static com.clone.s1ack.dto.request.MemberRequestDto.*;
 
 @Service
 @Slf4j
@@ -32,7 +35,7 @@ public class MemberService {
 
     //회원가입
     @Transactional
-    public MemberResponseDto.MemberAuthResponseDto signup(MemberRequestDto.MemberSignupRequestDto memberSignupRequestDto) {
+    public MemberResponseDto.MemberAuthResponseDto signup(MemberSignupRequestDto memberSignupRequestDto) {
         if(memberRepository.findByUsername(memberSignupRequestDto.getUsername()).isPresent()) {
             throw new RuntimeException("이미 존재하는 닉네임입니다.");
         }
@@ -53,16 +56,16 @@ public class MemberService {
         return new MemberResponseDto.MemberAuthResponseDto(savedMember);
     }
 
-    private void passwordEncode(MemberRequestDto.MemberSignupRequestDto memberSignupRequestDto) {
+    private void passwordEncode(MemberSignupRequestDto memberSignupRequestDto) {
         String encodedPassword = passwordEncoder.encode(memberSignupRequestDto.getPassword());
         memberSignupRequestDto.setEncodePassword(encodedPassword);
     }
 
     @Transactional
-    public MemberResponseDto.MemberAuthResponseDto login(MemberRequestDto.MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
+    public MemberResponseDto.MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
         Member findMember = memberRepository.findByEmail(memberLoginRequestDto.getEmail()).orElseThrow(
-                () -> new RuntimeException("해당 이메일이 존재하지 않습니다.")
+                () -> new RuntimeException("해당 이메일은 존재하지 않습니다.")
         );
 
         if(!passwordEncoder.matches(memberLoginRequestDto.getPassword(), findMember.getPassword())){
@@ -86,6 +89,21 @@ public class MemberService {
     private void addTokenHeader(HttpServletResponse response, TokenDto tokenDto) {
         response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
+    }
+
+
+    public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
+        if(memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).isPresent()) {
+            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 이메일 입니다.");
+        }
+        return ResponseDto.success("사용 가능한 이메일 입니다.");
+    }
+
+    public ResponseDto<String> isExistUsername(MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto) {
+        if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
+            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 닉네임 입니다.");
+        }
+        return ResponseDto.success("사용 가능한 닉네임 입니다.");
     }
 
 //    public String logout(Member member) {
