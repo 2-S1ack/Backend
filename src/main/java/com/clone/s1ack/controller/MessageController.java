@@ -34,9 +34,7 @@ public class MessageController {
         log.info("msg = {}, roomId = {}", msg.toString(), roomId);
         log.info("============");
 
-        return ResponseDto.success(messageService.sendMessage(msg, roomId
-//                                    , desUsername
-                ));
+        return ResponseDto.success(messageService.sendMessage(msg, roomId));
     }
 
     /**

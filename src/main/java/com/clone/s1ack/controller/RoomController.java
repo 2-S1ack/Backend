@@ -1,16 +1,12 @@
 package com.clone.s1ack.controller;
 
-import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.dto.ResponseDto;
-import com.clone.s1ack.dto.response.RoomResponseDto;
-import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +19,7 @@ import static com.clone.s1ack.dto.response.RoomResponseDto.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/chat")
+@RequestMapping("/api/chat")
 @Slf4j
 public class RoomController {
 
@@ -38,15 +34,17 @@ public class RoomController {
 
     /**
      * 1. 모든 대화방 목록 조회
+     *
+     * @return
      */
-    @GetMapping("/rooms")
+    @GetMapping("/room")
     @ResponseBody
-    public List<AllRoomResponseDto> rooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseDto<List<AllRoomResponseDto>> rooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         log.info("RoomController.rooms");
         /**
          * return ResponseDto.success(blabla);
          */
-        return roomService.findAllRoom(userDetails.getMember());
+        return ResponseDto.success(roomService.findAllRoom(userDetails.getMember()));
     }
 
     /**
@@ -75,7 +73,7 @@ public class RoomController {
     /**
      * 검색 내용 찾기
      */
-    @GetMapping("/search")
+    @GetMapping("/chat")
     public List<Message> searchMessage(@RequestParam String message) {
         log.info("RoomController.searchMessage");
         return roomService.searchMessage(message);

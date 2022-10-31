@@ -95,16 +95,16 @@ public class MemberService {
 
     public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
         if(memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).isPresent()) {
-            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 이메일 입니다.");
+            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 이메일이 존재합니다.");
         }
-        return ResponseDto.success("사용 가능한 이메일 입니다.");
+        return ResponseDto.success("중복된 이메일이 존재하지 않습니다.");
     }
 
     public ResponseDto<String> isExistUsername(MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto) {
         if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
-            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 닉네임 입니다.");
+            return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 닉네임이 존재합니다.");
         }
-        return ResponseDto.success("사용 가능한 닉네임 입니다.");
+        return ResponseDto.success("중복된 닉네임이 존재하지 않습니다.");
     }
 
 //    public String logout(Member member) {
