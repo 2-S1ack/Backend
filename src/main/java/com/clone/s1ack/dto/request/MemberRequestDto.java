@@ -23,7 +23,7 @@ public class MemberRequestDto {
         private String email;
 
         @NotBlank(message = "Username은 공백일 수 없습니다.")
-        @Pattern(regexp = "[a-zA-Z0-9]{4,12}", message = "닉네임양식을 확인해주세요!")
+        @Pattern(regexp = "[가-힣]{2,8}", message = "이름 은 2~8글자여야 합니다.")
         @Column(nullable = false, unique = true)
         private String username;
 
@@ -67,7 +67,7 @@ public class MemberRequestDto {
     @AllArgsConstructor
     public static class MemberSignUpDuplicateUsernameDto {
         @NotBlank(message = "Username은 공백일 수 없습니다.")
-        @Pattern(regexp = "[a-zA-Z0-9]{4,12}", message = "닉네임양식을 확인해주세요!")
+        @Pattern(regexp = "[가-힣]{2,8}", message = "이름 은 2~8글자여야 합니다.")
         @Column(nullable = false, unique = true)
         private String username;
     }

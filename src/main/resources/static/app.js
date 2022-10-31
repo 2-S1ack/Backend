@@ -43,13 +43,11 @@ $(function () {
             //     $("#greetings").append("<tr><td>" + message + "</td></tr>");
             // });
 
-            stompClient.subscribe('/topic/greetings', function (greeting) {
+            stompClient.subscribe('/sub/chat/room/{roomId}', function (msg) {
                 console.log("===== subscribe ======")
-                // let message = greeting.body;
-                let message = greeting;
-                // let message = JSON.parse(greeting.body).content;
+                let data = msg.body;
 
-                $("#greetings").append("<tr><td>" + message + "</td></tr>");
+                $("#greetings").append("<tr><td>" + data + "</td></tr>");
             });
         });
     });

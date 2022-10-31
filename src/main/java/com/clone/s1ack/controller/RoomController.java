@@ -2,28 +2,32 @@ package com.clone.s1ack.controller;
 
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
-import com.clone.s1ack.domain.Room;
+import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.dto.response.RoomResponseDto;
 import com.clone.s1ack.repository.MemberRepository;
+import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
+
+import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.*;
+import static com.clone.s1ack.dto.response.RoomResponseDto.*;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/chat")
+@Slf4j
 public class RoomController {
 
     private final RoomService roomService;
-    private final PasswordEncoder passwordEncoder;
-    private final MemberRepository memberRepository;
-
-    private Member member = null;
-
 
     /**
      * 필요한 API
@@ -37,12 +41,12 @@ public class RoomController {
      */
     @GetMapping("/rooms")
     @ResponseBody
-    public List<Room> rooms() {
-        System.out.println("RoomController.rooms");
+    public List<AllRoomResponseDto> rooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        log.info("RoomController.rooms");
         /**
          * return ResponseDto.success(blabla);
          */
-        return roomService.findAllRoom();
+        return roomService.findAllRoom(userDetails.getMember());
     }
 
     /**
@@ -50,9 +54,9 @@ public class RoomController {
      */
     @GetMapping("/room/{roomId}")
     @ResponseBody
-    public Room roomInfo(@PathVariable Long roomId) {
-        System.out.println("RoomController.roomInfo");
-        return roomService.findOneRoom(roomId);
+    public ResponseDto<FindOneResponseDto> roomInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long roomId) {
+        log.info("RoomController.roomInfo");
+        return ResponseDto.success(roomService.findOneRoom(userDetails.getMember(), roomId));
     }
 
     /**
@@ -60,18 +64,20 @@ public class RoomController {
      */
     @PostMapping("/room")
     @ResponseBody
-    public Room createRoom(
-//            @AuthenticationPrincipal UserDetailsImpl userDetails,
-            ) {
-        System.out.println("RoomController.createRoom");
+    public ResponseDto<Long> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody @Valid CreateRoomDto createRoomDto) {
         /**
          * 팀원 추가를 눌렀을 때 수행됨
          */
-        return roomService.createRoom();
+        log.info("RoomController.createRoom");
+        return roomService.createRoom(userDetails.getMember(), createRoomDto);
     }
 
+    /**
+     * 검색 내용 찾기
+     */
     @GetMapping("/search")
     public List<Message> searchMessage(@RequestParam String message) {
+        log.info("RoomController.searchMessage");
         return roomService.searchMessage(message);
     }
 

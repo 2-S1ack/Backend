@@ -25,10 +25,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // /queue와 /topic이 붙은 요청이 오면 messageBroker가 잡아서 해당 채팅방을 구독하고 있는 클라이언트에게 메시지를 전달하는데
         // STOMP 메시지의 destination 헤더는 @Controller 객체의 @MessageMapping 메서드로 라우팅된다.
-        registry.enableSimpleBroker("/sub");
+        registry.enableSimpleBroker("/sub"); // localhost:8080/sub/chat/message
 
         // Client(publisher)에서 보낸 메세지를 받을 경로
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.setApplicationDestinationPrefixes("/pub"); // localhost:8080/pub/chat/message
     }
 }
 

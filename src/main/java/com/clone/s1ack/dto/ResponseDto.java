@@ -15,8 +15,8 @@ public class ResponseDto<T> {
 
         return new ResponseDto<>(true, data, null);
     }
-    public static <T> ResponseDto<T> fail(Integer httpStatus, String message, String detail){
-        return new ResponseDto<>(false, null, new Error(httpStatus, message, detail));
+    public static <T> ResponseDto<T> fail(Integer httpStatus, String message){
+        return new ResponseDto<>(false, null, new Error(httpStatus, message));
     }
 
     @Getter
@@ -24,6 +24,5 @@ public class ResponseDto<T> {
     static class Error{
         private Integer httpStatus;
         private String message;
-        private String detail;
     }
 }

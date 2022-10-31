@@ -4,6 +4,7 @@ import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
 import com.clone.s1ack.dto.response.WebSocketResponseDto;
+import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,8 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final RoomRepository roomRepository;
+    private final MemberRepository memberRepository;
+
 
     private final PasswordEncoder passwordEncoder;
 
@@ -33,6 +36,7 @@ public class MessageService {
     private void init() {
         log.info("MessageService.init");
         member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
+        memberRepository.save(member);
     }
 
     public MsgContentResponseDto sendMessage(MsgContentRequestDto msg, String roomId) {
