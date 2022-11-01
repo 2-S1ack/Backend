@@ -15,6 +15,8 @@ public class MemberResponseDto {
         private String email;
         private String username;
 
+        private Member member;
+
         public MemberAuthResponseDto(Member savedMember) {
             this.id = savedMember.getId();
             this.email = savedMember.getEmail();
