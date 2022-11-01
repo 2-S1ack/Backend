@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
 import static com.clone.s1ack.dto.response.MemberResponseDto.*;
@@ -100,5 +101,13 @@ public class RoomService {
     public List<Message> searchMessage(String message) {
 
         return messageRepository.findByKeyword(message);
+    }
+
+    @Transactional
+    public String deleteRoom(Long roomId, String username) {
+        Member Username = memberRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("권한이 없는 유저입니다."));
+        roomRepository.deleteById(roomId);
+        return "룸 삭제가 완료되었습니다";
     }
 }

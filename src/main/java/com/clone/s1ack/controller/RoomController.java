@@ -66,6 +66,11 @@ public class RoomController {
         return roomService.searchMessage(message);
     }
 
+    @DeleteMapping("/room/{roomId}")
+    public ResponseDto<String> deleteRoom(@PathVariable Long roomId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return ResponseDto.success(roomService.deleteRoom(roomId, userDetails.getUsername()));
+    }
+
 //    @GetMapping("/room/enter/{roomId}") // /root/enter/1
 //    @ResponseBody
 //    public String roomEnter(@PathVariable Long roomId, @RequestParam String msg) {
