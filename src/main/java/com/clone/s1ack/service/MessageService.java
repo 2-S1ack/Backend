@@ -27,28 +27,20 @@ public class MessageService {
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
-    private Member member = null;
-
-    @PostConstruct
-    //의존관계 주입완료되면 실행되는 코드
-    private void init() {
-        log.info("MessageService.init");
-        member = new Member(1L,"jae", "email@co.kr", passwordEncoder.encode("blabla"));
-        memberRepository.save(member);
-    }
-
     @Transactional
-    public MsgContentResponseDto sendMessage(MsgContentRequestDto msg, String roomId) {
+    public MsgContentResponseDto sendMessage(Member member, MsgContentRequestDto msg, String roomId) {
         log.info("MessageService.sendMessage");
         // roomRepository에서 converedRommId값을 기준으로 조회하고, 있으면 findRoom 변수에 할당해준다. (예외처리도 해줌)
         Room findRoom = roomRepository.findById(Long.valueOf(roomId)).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 방입니다.")
         );
 
+        Member findMember = memberRepository.findById(member.getId()).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 유저입니다.")
+        );
+
         // @Builder 찾아보기
-        Message message = new Message(msg.getName(), findRoom, member,"vugil@naver.com");
+        Message message = new Message(msg.getName(), findRoom, findMember, findRoom.getDesUsername());
         messageRepository.save(message);
 
         return new MsgContentResponseDto(findRoom.getId(), msg, findRoom, message);

@@ -1,12 +1,14 @@
 package com.clone.s1ack.controller;
 
 import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -28,9 +30,10 @@ public class MessageController {
     @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
     @SendTo("/sub/chat/room/{roomId}")
     @ResponseBody
-    public ResponseDto<MsgContentResponseDto> requiredMessage(MsgContentRequestDto msg,
+    public ResponseDto<MsgContentResponseDto> requiredMessage(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                              MsgContentRequestDto msg,
                                                               @DestinationVariable String roomId) {
-        return ResponseDto.success(messageService.sendMessage(msg, roomId));
+        return ResponseDto.success(messageService.sendMessage(userDetails.getMember(), msg, roomId));
     }
 
     /**
