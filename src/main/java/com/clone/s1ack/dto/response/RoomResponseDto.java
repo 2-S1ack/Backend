@@ -23,11 +23,13 @@ public class RoomResponseDto {
         private Long roodId;
         private List<FindOneMessageResponseDto> content = new ArrayList<>();
 
+        private String filename;
 
-        public FindOneResponseDto(Room findRoom, List<Message> messages) {
+        public FindOneResponseDto(Room findRoom, List<Message> messages, String filename) {
             this.username = findRoom.getUsername();
             this.desUsername = findRoom.getDesUsername();
             this.roodId = findRoom.getId();
+            this.filename = filename;
             addContent(messages);
         }
 

@@ -128,27 +128,28 @@ public class MemberService {
 
         String imgurl = "";
 
-            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
+        String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(multipartFile.getContentType());
 
-            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
-            objectMetadata.setContentLength(bytes.length);
-            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+        byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
+        objectMetadata.setContentLength(bytes.length);
+        ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
 
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            imgurl = amazonS3Client.getUrl(bucketName, fileName).toString();
+        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+        imgurl = amazonS3Client.getUrl(bucketName, fileName).toString();
 
-        findMember.updateMember(fileName, imgurl, userName);
+        //dirty Checking 기능활용
+        findMember.updateMember(fileName, imgurl, name);
 
         return ResponseDto.success("프로필 수정이 완료되었습니다");
-        }
     }
+
+}
 
 //    public String logout(Member member) {
 //        refreshTokenRepository.deleteByMemberUsername(member.getUsername());
 //        return "로그아웃 완료";
 //    }
-
 

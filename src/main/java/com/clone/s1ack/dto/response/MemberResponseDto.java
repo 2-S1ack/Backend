@@ -15,7 +15,7 @@ public class MemberResponseDto {
         private String email;
         private String username;
 
-        private Member member;
+        private String filename;
 
         public MemberAuthResponseDto(Member savedMember) {
             this.id = savedMember.getId();
@@ -30,6 +30,8 @@ public class MemberResponseDto {
     public static class AllRoomResponseDto {
         private Long id;
         private String desUsername;
+        private String username;
+        private String filename;
     }
 
 

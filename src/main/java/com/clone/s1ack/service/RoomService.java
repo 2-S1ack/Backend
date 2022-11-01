@@ -44,7 +44,7 @@ public class RoomService {
         List<AllRoomResponseDto> responseDto = new ArrayList<>();
 
         for (Room room : rooms) {
-            responseDto.add(new AllRoomResponseDto(room.getId(), room.getDesUsername()));
+            responseDto.add(new AllRoomResponseDto(room.getId(), room.getDesUsername(),findMember.getUsername(),findMember.getFileName()));
         }
         return responseDto;
     }
@@ -64,7 +64,7 @@ public class RoomService {
         List<Message> messages = messageRepository.findByRoomId(findRoom.getId());
 
         // 송신자 수신자 내용 생성시간 수정시간 룸ID
-        return new FindOneResponseDto(findRoom, messages);
+        return new FindOneResponseDto(findRoom, messages, member.getFileName());
     }
 
     /**
@@ -91,11 +91,8 @@ public class RoomService {
     }
 
     private Member isExistMember(Member member) {
-        Member findMember = memberRepository.findByUsername(member.getUsername()).orElseThrow(
-                () -> new RuntimeException("로그인이 필요합니다.")
-        );
-        return findMember;
-    }
+        return memberRepository.findByUsername(member.getUsername()).orElseThrow(
+                () -> new RuntimeException("로그인이 필요합니다."));}
 
     @Transactional
     public List<Message> searchMessage(String message) {
