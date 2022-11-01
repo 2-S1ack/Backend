@@ -2,7 +2,9 @@ package com.clone.s1ack.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -22,7 +24,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         /**
          * pub -> Message Broker -> sub
          */
-
         // /queue와 /topic이 붙은 요청이 오면 messageBroker가 잡아서 해당 채팅방을 구독하고 있는 클라이언트에게 메시지를 전달하는데
         // STOMP 메시지의 destination 헤더는 @Controller 객체의 @MessageMapping 메서드로 라우팅된다.
         registry.enableSimpleBroker("/sub"); // localhost:8080/sub/chat/message

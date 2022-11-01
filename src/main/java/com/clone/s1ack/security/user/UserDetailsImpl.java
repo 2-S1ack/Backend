@@ -15,7 +15,6 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public Member getMember() {
-
         return member;
     }
 

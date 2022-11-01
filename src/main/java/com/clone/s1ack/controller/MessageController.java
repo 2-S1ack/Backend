@@ -28,12 +28,8 @@ public class MessageController {
     @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
     @SendTo("/sub/chat/room/{roomId}")
     @ResponseBody
-    public ResponseDto<MsgContentResponseDto> requiredMessage(MsgContentRequestDto msg, @DestinationVariable String roomId) {
-        log.info("============");
-        log.info("MessageController.sendMessage");
-        log.info("msg = {}, roomId = {}", msg.toString(), roomId);
-        log.info("============");
-
+    public ResponseDto<MsgContentResponseDto> requiredMessage(MsgContentRequestDto msg,
+                                                              @DestinationVariable String roomId) {
         return ResponseDto.success(messageService.sendMessage(msg, roomId));
     }
 

@@ -17,26 +17,26 @@ public class RoomResponseDto {
     @AllArgsConstructor
     public static class FindOneResponseDto {
 
-        // 송신자 수신자 내용 생성시간 수정시간 룸ID
+        // 송신자 수신자 룸ID / 내용 생성시간 수정시간
         private String username;
         private String desUsername;
+        private Long roodId;
         private List<FindOneMessageResponseDto> content = new ArrayList<>();
 
 
         public FindOneResponseDto(Room findRoom, List<Message> messages) {
             this.username = findRoom.getUsername();
             this.desUsername = findRoom.getDesUsername();
-            this.content = addContent(messages);
+            this.roodId = findRoom.getId();
+            addContent(messages);
         }
 
-
-        public List<FindOneMessageResponseDto> addContent(List<Message> messages) {
+        public void addContent(List<Message> messages) {
             for (Message message : messages) {
                 this.content.add(new FindOneMessageResponseDto(message.getCreatedAt(),
-                                                               message.getModifiedAt(),
-                                                               message.getContent()));
+                                                                message.getModifiedAt(),
+                                                                message.getContent()));
             }
-            return null;
         }
     }
 

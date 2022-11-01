@@ -3,8 +3,6 @@ package com.clone.s1ack.service;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.RefreshToken;
 import com.clone.s1ack.dto.ResponseDto;
-import com.clone.s1ack.dto.request.MemberRequestDto;
-import com.clone.s1ack.dto.response.MemberResponseDto;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.RefreshTokenRepository;
 import com.clone.s1ack.security.jwt.JwtUtil;
@@ -20,10 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
-import static com.clone.s1ack.dto.response.MemberResponseDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.MemberAuthResponseDto;
 
 @Service
 @Slf4j
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -32,7 +31,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
 
     //회원가입
     @Transactional
@@ -57,11 +55,7 @@ public class MemberService {
         return new MemberAuthResponseDto(savedMember);
     }
 
-    private void passwordEncode(MemberSignupRequestDto memberSignupRequestDto) {
-        String encodedPassword = passwordEncoder.encode(memberSignupRequestDto.getPassword());
-        memberSignupRequestDto.setEncodePassword(encodedPassword);
-    }
-
+    // 로그인
     @Transactional
     public MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
@@ -87,12 +81,6 @@ public class MemberService {
         return new MemberAuthResponseDto(findMember);
     }
 
-    private void addTokenHeader(HttpServletResponse response, TokenDto tokenDto) {
-        response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
-    }
-
-
     public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
         if(memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).isPresent()) {
             return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 이메일이 존재합니다.");
@@ -105,6 +93,16 @@ public class MemberService {
             return ResponseDto.fail(HttpStatus.FORBIDDEN.value(), "중복된 닉네임이 존재합니다.");
         }
         return ResponseDto.success("중복된 닉네임이 존재하지 않습니다.");
+    }
+
+    private void passwordEncode(MemberSignupRequestDto memberSignupRequestDto) {
+        String encodedPassword = passwordEncoder.encode(memberSignupRequestDto.getPassword());
+        memberSignupRequestDto.setEncodePassword(encodedPassword);
+    }
+
+    private void addTokenHeader(HttpServletResponse response, TokenDto tokenDto) {
+        response.addHeader(JwtUtil.ACCESS_TOKEN, tokenDto.getAccessToken());
+        response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
 //    public String logout(Member member) {

@@ -4,12 +4,10 @@ import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.QMessage;
 import com.clone.s1ack.domain.QRoom;
 import com.clone.s1ack.repository.custom.MessageRepositoryCustom;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor

@@ -101,12 +101,4 @@ public class RoomService {
 
         return messageRepository.findByKeyword(message);
     }
-
-    /**
-     * 대화 방 입장하기
-     */
-
-
-
-
 }
