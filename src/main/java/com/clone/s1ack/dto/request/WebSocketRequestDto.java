@@ -3,14 +3,10 @@ package com.clone.s1ack.dto.request;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Room;
 import lombok.*;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.Column;
-import javax.persistence.Lob;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.HashSet;
-import java.util.Set;
 
 public class WebSocketRequestDto {
 

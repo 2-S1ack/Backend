@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
-import static com.clone.s1ack.dto.response.MemberResponseDto.*;
-import static com.clone.s1ack.dto.response.RoomResponseDto.*;
+import static com.clone.s1ack.dto.request.WebSocketRequestDto.CreateRoomDto;
+import static com.clone.s1ack.dto.response.MemberResponseDto.AllRoomResponseDto;
+import static com.clone.s1ack.dto.response.RoomResponseDto.FindOneResponseDto;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,13 +26,6 @@ public class RoomController {
     private final RoomService roomService;
 
     /**
-     * 필요한 API
-     * 1. 모든 대화방 목록 조회
-     * 2. 특정 대화방 목록 조회
-     * 3. 새로운 채팅방 생성
-     */
-
-    /**
      * 1. 모든 대화방 목록 조회
      *
      * @return
@@ -41,9 +34,6 @@ public class RoomController {
     @ResponseBody
     public ResponseDto<List<AllRoomResponseDto>> rooms(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         log.info("RoomController.rooms");
-        /**
-         * return ResponseDto.success(blabla);
-         */
         return ResponseDto.success(roomService.findAllRoom(userDetails.getMember()));
     }
 
@@ -63,9 +53,6 @@ public class RoomController {
     @PostMapping("/room")
     @ResponseBody
     public ResponseDto<Long> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody @Valid CreateRoomDto createRoomDto) {
-        /**
-         * 팀원 추가를 눌렀을 때 수행됨
-         */
         log.info("RoomController.createRoom");
         return roomService.createRoom(userDetails.getMember(), createRoomDto);
     }
