@@ -8,11 +8,8 @@ import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.MsgContentRequestDto;
 import static com.clone.s1ack.dto.response.WebSocketResponseDto.MsgContentResponseDto;

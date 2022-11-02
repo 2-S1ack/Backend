@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class MemberController {
      * 회원가입
      */
     @PostMapping("/signup")
-    public ResponseDto<MemberResponseDto.MemberAuthResponseDto> registerMember(@RequestBody @Valid MemberSignupRequestDto memberRequestDto) {
+    public ResponseDto<MemberAuthResponseDto> registerMember(@RequestBody @Valid MemberSignupRequestDto memberRequestDto) {
         return ResponseDto.success(memberService.signup(memberRequestDto));
     }
 
@@ -33,7 +34,7 @@ public class MemberController {
      * 로그인
      */
     @PostMapping("/login")
-    public ResponseDto<MemberResponseDto.MemberAuthResponseDto> login(@RequestBody MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
+    public ResponseDto<MemberAuthResponseDto> login(@RequestBody MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
         return ResponseDto.success(memberService.login(memberLoginRequestDto, response));
     }
 

@@ -10,14 +10,17 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.MsgContentRequestDto;
 import static com.clone.s1ack.dto.response.WebSocketResponseDto.MsgContentResponseDto;
 
-@Controller
 @RequiredArgsConstructor
 @Slf4j
+@Controller
 public class MessageController {
 
 //    private final SimpMessageSendingOperations sendingOperations;

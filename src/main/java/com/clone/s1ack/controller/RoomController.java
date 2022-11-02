@@ -52,7 +52,8 @@ public class RoomController {
      */
     @PostMapping("/room")
     @ResponseBody
-    public ResponseDto<Long> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody @Valid CreateRoomDto createRoomDto) {
+    public ResponseDto<Long> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @RequestBody @Valid CreateRoomDto createRoomDto) {
         log.info("RoomController.createRoom");
         return roomService.createRoom(userDetails.getMember(), createRoomDto);
     }
