@@ -3,7 +3,8 @@ package com.clone.s1ack.service;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
-import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.dto.response.FindAllMessageInOneRoomResponseDto;
+import com.clone.s1ack.dto.response.RoomResponseDto;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
 import static com.clone.s1ack.dto.response.MemberResponseDto.*;
@@ -52,7 +52,7 @@ public class RoomService {
     /**
      * 특정 대화 방 조회하기
      */
-    public FindOneResponseDto findOneRoom(Member member, Long roomId) {
+    public FindOneRoomResponseDto findOneRoom(Member member, Long roomId) {
         isExistMember(member);
 
         // 1. 특정 대화 방 찾기
@@ -61,17 +61,19 @@ public class RoomService {
         );
 
         // 2. 특정 대화방의 내용을 찾기
-        List<Message> messages = messageRepository.findByRoomId(findRoom.getId());
+//        List<Message> messages = messageRepository.findByRoomId(findRoom.getId());
+        List<FindAllMessageInOneRoomResponseDto> roomAllMsg = messageRepository.findOneRoomAllMsg(findRoom.getId());
 
         // 송신자 수신자 내용 생성시간 수정시간 룸ID
-        return new FindOneResponseDto(findRoom, messages, member.getFileName());
+//        return new FindOneResponseDto(findRoom, messages, member.getFileName());
+        return new FindOneRoomResponseDto(findRoom, member.getFileName(), roomAllMsg);
     }
 
     /**
      * 대화 방 생성하기
      */
     @Transactional
-    public ResponseDto<Long> createRoom(Member member, CreateRoomDto createRoomDto) {
+    public createRoomResponseDto createRoom(Member member, CreateRoomDto createRoomDto) {
         isExistMember(member);
 
         log.info("===============");
@@ -87,12 +89,13 @@ public class RoomService {
         Room room = new Room(findMember.getUsername(), member.getUsername());
         roomRepository.save(room);
 
-        return ResponseDto.success(room.getId());
+        return new createRoomResponseDto(room.getUsername(), room.getDesUsername(), room.getId());
     }
 
     private Member isExistMember(Member member) {
         return memberRepository.findByUsername(member.getUsername()).orElseThrow(
-                () -> new RuntimeException("로그인이 필요합니다."));}
+                () -> new RuntimeException("로그인이 필요합니다."))
+                ;}
 
     @Transactional
     public List<Message> searchMessage(String message) {
