@@ -30,7 +30,14 @@ public class Member {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private String fileName;
+
+    @Column
+    private String url;
+
     public Member(String username, String email, String password) {
+
         this.username = username;
         this.email = email;
         this.password = password;
@@ -40,5 +47,19 @@ public class Member {
         this.username = memberSignupRequestDto.getUsername();
         this.email = memberSignupRequestDto.getEmail();
         this.password = memberSignupRequestDto.getPassword();
+    }
+
+    public Member(Member member, String fileName, String imageUrl) {
+        this.username = member.getUsername();
+        this.email = member.getEmail();
+        this.password = member.getPassword();
+        this.fileName = fileName;
+        this.url = imageUrl;
+    }
+
+    public void updateMember(String fileName, String imageUrl, String username) {
+        this.username = username;
+        this.fileName = fileName;
+        this.url = imageUrl;
     }
 }

@@ -1,5 +1,10 @@
 package com.clone.s1ack.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.util.IOUtils;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.RefreshToken;
 import com.clone.s1ack.dto.ResponseDto;
@@ -7,14 +12,20 @@ import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.RefreshTokenRepository;
 import com.clone.s1ack.security.jwt.JwtUtil;
 import com.clone.s1ack.security.jwt.TokenDto;
+import com.clone.s1ack.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.implementation.bytecode.Throw;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
@@ -31,6 +42,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
 
     //회원가입
     @Transactional
@@ -105,9 +121,35 @@ public class MemberService {
         response.addHeader(JwtUtil.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
+    @Transactional
+    public ResponseDto<String> modifiedProfile(MultipartFile multipartFile, String name, String userName)throws IOException {
+        Member findMember = memberRepository.findByUsername(userName).orElseThrow(
+                () -> new IllegalArgumentException("유효한 회원이 아닙니다"));
+
+        String imgurl = "";
+
+        String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(multipartFile.getContentType());
+
+        byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
+        objectMetadata.setContentLength(bytes.length);
+        ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+
+        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+        imgurl = amazonS3Client.getUrl(bucketName, fileName).toString();
+
+        //dirty Checking 기능활용
+        findMember.updateMember(fileName, imgurl, name);
+
+        return ResponseDto.success("프로필 수정이 완료되었습니다");
+    }
+
+}
+
 //    public String logout(Member member) {
 //        refreshTokenRepository.deleteByMemberUsername(member.getUsername());
 //        return "로그아웃 완료";
 //    }
-}
 
