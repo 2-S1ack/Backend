@@ -15,14 +15,13 @@ public class ResponseDto<T> {
 
         return new ResponseDto<>(true, data, null);
     }
-    public static <T> ResponseDto<T> fail(Integer httpStatus, String message){
-        return new ResponseDto<>(false, null, new Error(httpStatus, message));
+    public static <T> ResponseDto<T> fail(String message){
+        return new ResponseDto<>(false, null, new Error(message));
     }
 
     @Getter
     @AllArgsConstructor
     static class Error{
-        private Integer httpStatus;
         private String message;
     }
 }

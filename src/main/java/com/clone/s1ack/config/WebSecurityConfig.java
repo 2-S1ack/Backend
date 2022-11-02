@@ -76,6 +76,7 @@ public class WebSecurityConfig {
                 .antMatchers("/api/logout").permitAll()
                 .antMatchers("/api/member/duplication/**").permitAll()
                 .antMatchers("/").permitAll()
+                .antMatchers("/**").permitAll()
 
 //                .antMatchers(HttpMethod.GET, "/product/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/product/{productId}/comment/**").permitAll()

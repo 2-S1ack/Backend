@@ -15,11 +15,11 @@ import java.util.List;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.CreateRoomDto;
 import static com.clone.s1ack.dto.response.MemberResponseDto.AllRoomResponseDto;
-import static com.clone.s1ack.dto.response.RoomResponseDto.FindOneResponseDto;
+import static com.clone.s1ack.dto.response.RoomResponseDto.*;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/chat")
+@RequestMapping("/api")
 @Slf4j
 public class RoomController {
 
@@ -27,8 +27,6 @@ public class RoomController {
 
     /**
      * 1. 모든 대화방 목록 조회
-     *
-     * @return
      */
     @GetMapping("/room")
     @ResponseBody
@@ -42,20 +40,22 @@ public class RoomController {
      */
     @GetMapping("/room/{roomId}")
     @ResponseBody
-    public ResponseDto<FindOneResponseDto> roomInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long roomId) {
+    public ResponseDto<FindOneRoomResponseDto> roomInfo(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long roomId) {
         log.info("RoomController.roomInfo");
         return ResponseDto.success(roomService.findOneRoom(userDetails.getMember(), roomId));
     }
 
     /**
      * 3. 새로운 채팅방 생성 (새대화 -> 팀원 추가)
+     *
+     * @return
      */
     @PostMapping("/room")
     @ResponseBody
-    public ResponseDto<Long> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                        @RequestBody @Valid CreateRoomDto createRoomDto) {
+    public ResponseDto<createRoomResponseDto> createRoom(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                         @RequestBody @Valid CreateRoomDto createRoomDto) {
         log.info("RoomController.createRoom");
-        return roomService.createRoom(userDetails.getMember(), createRoomDto);
+        return ResponseDto.success(roomService.createRoom(userDetails.getMember(), createRoomDto));
     }
 
     /**
