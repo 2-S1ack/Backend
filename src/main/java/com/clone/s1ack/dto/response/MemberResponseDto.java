@@ -34,5 +34,12 @@ public class MemberResponseDto {
         private String filename;
     }
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProfileResponseDto {
+        private String username;
+        private String filename;
+    }
 
 }

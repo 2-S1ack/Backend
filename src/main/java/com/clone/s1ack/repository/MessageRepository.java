@@ -12,7 +12,8 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long>, MessageRepositoryCustom {
 //    List<Message> findByRoomId(Long id);
 
-    @Query(value = "select new com.clone.s1ack.dto.response.FindAllMessageInOneRoomResponseDto(r.username, r.desUsername, m.content, m.createdAt, m.modifiedAt) " +
+    @Query(value = "select new com.clone.s1ack.dto.response.FindAllMessageInOneRoomResponseDto" +
+            "(r.username, r.desUsername, m.content, m.createdAt, m.modifiedAt) " +
             "from Message m inner join m.room r " +
             "where m.room.id = r.id and r.id = :roomId")
     List<FindAllMessageInOneRoomResponseDto> findOneRoomAllMsg(@Param("roomId") Long roomId);

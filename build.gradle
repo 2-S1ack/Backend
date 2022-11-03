@@ -63,6 +63,10 @@ dependencies {
 	implementation 'org.webjars:webjars-locator-core'
 	implementation 'org.webjars:bootstrap:5.2.2'
 	implementation 'org.webjars:jquery:3.6.1'
+
+	// img
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
+	implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 }
 
 tasks.named('test') {

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,7 @@ public class MessageController {
 
     // @MessageMapping에서 variable을 추출할 때는 @DestinationVariable을 사용한다.
     @MessageMapping("/chat/message/{roomId}") // /pub/chat/message/1 => 송신메시지
-    @SendTo("/sub/chat/room/{roomId}")
+    @SendToUser("/sub/chat/room/{roomId}")
     @ResponseBody
     public ResponseDto<MsgContentResponseDto> requiredMessage(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                               MsgContentRequestDto msg,
