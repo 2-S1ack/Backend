@@ -100,19 +100,16 @@ public class MemberService {
     }
 
     public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
-        memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).orElseThrow(
-                () -> new CustomCommonException(ErrorCode.DUPLICATE_USERNAME));
-        // 중복 체크
-        // 1. DB에 있으면 예외
-        // 2. 없으면 OK
-
-        return ResponseDto.success("중복된 이메일이 존재하지 않습니다.")
+        memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).ifPresent(member -> {
+            throw new CustomCommonException(ErrorCode.DUPLICATE_USERNAME);
+        });
+        return ResponseDto.success("중복된 이메일이 존재하지 않습니다.");
     }
 
     public ResponseDto<String> isExistUsername(MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto) {
-        if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
-            return ResponseDto.fail("중복된 닉네임이 존재합니다.", HttpStatus.FORBIDDEN);
-        }
+//        if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
+//            return ResponseDto.fail("중복된 닉네임이 존재합니다.", HttpStatus.FORBIDDEN);
+//        }
         return ResponseDto.success("중복된 닉네임이 존재하지 않습니다.");
     }
 
