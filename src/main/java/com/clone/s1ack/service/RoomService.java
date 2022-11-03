@@ -4,7 +4,8 @@ import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
 import com.clone.s1ack.dto.response.FindAllMessageInOneRoomResponseDto;
-import com.clone.s1ack.dto.response.RoomResponseDto;
+import com.clone.s1ack.exception.CustomCommonException;
+import com.clone.s1ack.exception.ErrorCode;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
@@ -16,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.clone.s1ack.dto.request.WebSocketRequestDto.*;
-import static com.clone.s1ack.dto.response.MemberResponseDto.*;
-import static com.clone.s1ack.dto.response.RoomResponseDto.*;
+import static com.clone.s1ack.dto.request.WebSocketRequestDto.CreateRoomDto;
+import static com.clone.s1ack.dto.response.MemberResponseDto.AllRoomResponseDto;
+import static com.clone.s1ack.dto.response.RoomResponseDto.FindOneRoomResponseDto;
+import static com.clone.s1ack.dto.response.RoomResponseDto.createRoomResponseDto;
 
 @Service
 @Slf4j
@@ -39,7 +41,6 @@ public class RoomService {
 
         // 검색 조건: 채팅방 최근 생성 순 + 해당 사용자와 일치하는 메시지의 desUsername
         // 로그인한 사용자와 동일한 룸의 desUsername을 읽어온다
-
         List<Room> rooms = roomRepository.findByUsername(findMember.getUsername());
         List<AllRoomResponseDto> responseDto = new ArrayList<>();
 
@@ -57,7 +58,7 @@ public class RoomService {
 
         // 1. 특정 대화 방 찾기
         Room findRoom = roomRepository.findByUsernameAndId(member.getUsername(), roomId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 방입니다.")
+                () -> new CustomCommonException(ErrorCode.ROOM_NOT_FOUND)
         );
 
         // 2. 특정 대화방의 내용을 찾기
@@ -82,10 +83,8 @@ public class RoomService {
         log.info("===============");
 
         Member findMember = memberRepository.findByEmail(createRoomDto.getDesEmail()).orElseThrow(
-                () -> new RuntimeException("존재하지 않은 사용자 입니다.")
+                () -> new CustomCommonException(ErrorCode.USER_NOT_FOUND)
         );
-
-
         Room room = new Room(findMember.getUsername(), member.getUsername());
         roomRepository.save(room);
 
@@ -95,8 +94,8 @@ public class RoomService {
 
     private Member isExistMember(Member member) {
         return memberRepository.findByUsername(member.getUsername()).orElseThrow(
-                () -> new RuntimeException("로그인이 필요합니다."))
-                ;}
+                () -> new CustomCommonException(ErrorCode.FORBIDDEN_USER));
+    }
 
     @Transactional
     public List<Message> searchMessage(String message) {
@@ -107,7 +106,7 @@ public class RoomService {
     @Transactional
     public String deleteRoom(Long roomId, String username) {
         Member Username = memberRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("권한이 없는 유저입니다."));
+                () -> new CustomCommonException(ErrorCode.UNAUTHORIZED_USER));
         roomRepository.deleteById(roomId);
         return "룸 삭제가 완료되었습니다";
     }

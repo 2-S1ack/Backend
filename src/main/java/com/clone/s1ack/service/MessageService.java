@@ -3,6 +3,8 @@ package com.clone.s1ack.service;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.Message;
 import com.clone.s1ack.domain.Room;
+import com.clone.s1ack.exception.CustomCommonException;
+import com.clone.s1ack.exception.ErrorCode;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.MessageRepository;
 import com.clone.s1ack.repository.RoomRepository;
@@ -29,11 +31,11 @@ public class MessageService {
         log.info("MessageService.sendMessage");
         // roomRepository에서 converedRommId값을 기준으로 조회하고, 있으면 findRoom 변수에 할당해준다. (예외처리도 해줌)
         Room findRoom = roomRepository.findById(Long.valueOf(roomId)).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 방입니다.")
+                () -> new CustomCommonException(ErrorCode.ROOM_NOT_FOUND)
         );
 
         Member findMember = memberRepository.findById(member.getId()).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 유저입니다.")
+                () -> new CustomCommonException(ErrorCode.USER_NOT_FOUND)
         );
 
         // @Builder 찾아보기
