@@ -92,6 +92,7 @@ public class RoomService {
         return new createRoomResponseDto(room.getUsername(), room.getDesUsername(), room.getId());
     }
 
+
     private Member isExistMember(Member member) {
         return memberRepository.findByUsername(member.getUsername()).orElseThrow(
                 () -> new RuntimeException("로그인이 필요합니다."))

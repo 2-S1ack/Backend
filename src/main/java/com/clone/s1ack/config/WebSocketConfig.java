@@ -1,7 +1,10 @@
 package com.clone.s1ack.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -10,11 +13,18 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Bean
+    public MultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(2000000000);
+        return multipartResolver;
+    }
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // React 에서 new SockJS("/ws/chat") 을 했을 때 새로운 핸드쉐이크 커넥션(WebSocket 에 연결)을 생성할때
         registry.addEndpoint("/chat") // SockJS 연결 주소
-//                .setAllowedOrigins("*")
+                .setAllowedOrigins("*")
                 .withSockJS();
         // URL: ws://localhost:8080/chat
     }

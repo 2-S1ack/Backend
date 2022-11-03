@@ -1,6 +1,7 @@
 package com.clone.s1ack.controller;
 
 import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.dto.response.MemberResponseDto;
 import com.clone.s1ack.security.user.UserDetailsImpl;
 import com.clone.s1ack.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 import static com.clone.s1ack.dto.response.MemberResponseDto.MemberAuthResponseDto;
 
 @RestController
@@ -55,10 +57,10 @@ public class MemberController {
     }
 
     @PatchMapping("/member/profile")
-    public ResponseDto<String> editProfile(@RequestPart(required = false, value = "file") MultipartFile multipartFile,
-                                               @RequestPart(value = "name") String name,
-                                               @AuthenticationPrincipal UserDetailsImpl userDetails)throws IOException {
-        return memberService.modifiedProfile(multipartFile, name,userDetails.getUsername());
+    public ProfileResponseDto editProfile(@RequestParam(required = false, value = "file") MultipartFile multipartFile,
+                                                @RequestParam(value = "name") MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        return memberService.modifiedProfile(multipartFile, memberSignUpDuplicateUsernameDto.getUsername(), userDetails.getUsername());
     }
 
 //    //로그아웃

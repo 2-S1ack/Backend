@@ -8,6 +8,8 @@ import com.amazonaws.util.IOUtils;
 import com.clone.s1ack.domain.Member;
 import com.clone.s1ack.domain.RefreshToken;
 import com.clone.s1ack.dto.ResponseDto;
+import com.clone.s1ack.exception.CustomCommonException;
+import com.clone.s1ack.exception.ErrorCode;
 import com.clone.s1ack.repository.MemberRepository;
 import com.clone.s1ack.repository.RefreshTokenRepository;
 import com.clone.s1ack.security.jwt.JwtUtil;
@@ -15,7 +17,6 @@ import com.clone.s1ack.security.jwt.TokenDto;
 import com.clone.s1ack.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +30,9 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
+import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 import static com.clone.s1ack.dto.response.MemberResponseDto.MemberAuthResponseDto;
+import static com.clone.s1ack.exception.ErrorCode.DUPLICATE_USERNAME;
 
 @Service
 @Slf4j
@@ -62,7 +65,6 @@ public class MemberService {
         if(!memberSignupRequestDto.getPassword().equals(memberSignupRequestDto.getPasswordConfirm())){
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
-
 
         passwordEncode(memberSignupRequestDto);
         Member savedMember = new Member(memberSignupRequestDto);
@@ -98,15 +100,18 @@ public class MemberService {
     }
 
     public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
-        if(memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).isPresent()) {
-            return ResponseDto.fail("중복된 이메일이 존재합니다.");
-        }
-        return ResponseDto.success("중복된 이메일이 존재하지 않습니다.");
+        memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).orElseThrow(
+                () -> new CustomCommonException(ErrorCode.DUPLICATE_USERNAME));
+        // 중복 체크
+        // 1. DB에 있으면 예외
+        // 2. 없으면 OK
+
+        return ResponseDto.success("중복된 이메일이 존재하지 않습니다.")
     }
 
     public ResponseDto<String> isExistUsername(MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto) {
         if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
-            return ResponseDto.fail("중복된 닉네임이 존재합니다.");
+            return ResponseDto.fail("중복된 닉네임이 존재합니다.", HttpStatus.FORBIDDEN);
         }
         return ResponseDto.success("중복된 닉네임이 존재하지 않습니다.");
     }
@@ -122,13 +127,17 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseDto<String> modifiedProfile(MultipartFile multipartFile, String name, String userName)throws IOException {
-        Member findMember = memberRepository.findByUsername(userName).orElseThrow(
+    public ProfileResponseDto modifiedProfile(MultipartFile multipartFile, String name, String loginUser) throws IOException {
+        log.info("loginUser = {}", loginUser);
+        Member findMember = memberRepository.findByUsername(loginUser).orElseThrow(
                 () -> new IllegalArgumentException("유효한 회원이 아닙니다"));
 
-        String imgurl = "";
-
         String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+
+        log.info("=============");
+        log.info("fileName = {}", fileName);
+        log.info("=============");
+
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());
 
@@ -138,12 +147,16 @@ public class MemberService {
 
         amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
-        imgurl = amazonS3Client.getUrl(bucketName, fileName).toString();
+        String imgUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
+
+        log.info("=============");
+        log.info("imgUrl = {}", imgUrl);
+        log.info("=============");
 
         //dirty Checking 기능활용
-        findMember.updateMember(fileName, imgurl, name);
+        findMember.updateMember(fileName, imgUrl, name);
 
-        return ResponseDto.success("프로필 수정이 완료되었습니다");
+        return new ProfileResponseDto(findMember.getUsername(), findMember.getUrl());
     }
 }
 

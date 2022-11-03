@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -52,14 +53,18 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.cors().configurationSource(request -> {
-           var cors = new CorsConfiguration();
-           cors.setAllowedOriginPatterns(List.of("*"));
-           cors.setAllowedMethods(List.of("*"));
-           cors.setAllowedHeaders(List.of("*"));
-           cors.addExposedHeader("Authorization");
-           cors.addExposedHeader("Refresh_Token");
-           cors.setAllowCredentials(true);
-           return cors;
+            var cors = new CorsConfiguration();
+            cors.setAllowedOriginPatterns(List.of("*"));
+            cors.setAllowedMethods(List.of("*"));
+            cors.setAllowedHeaders(List.of("*"));
+            cors.addExposedHeader("Authorization");
+            cors.addExposedHeader("Refresh_Token");
+            cors.setAllowCredentials(true);
+
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", cors);
+
+            return cors;
         });
 
         http.csrf().disable()
