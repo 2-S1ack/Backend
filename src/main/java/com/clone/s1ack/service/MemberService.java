@@ -18,7 +18,6 @@ import com.clone.s1ack.utils.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +29,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.clone.s1ack.dto.request.MemberRequestDto.*;
-import static com.clone.s1ack.dto.response.MemberResponseDto.*;
 import static com.clone.s1ack.dto.response.MemberResponseDto.MemberAuthResponseDto;
-import static com.clone.s1ack.exception.ErrorCode.DUPLICATE_USERNAME;
+import static com.clone.s1ack.dto.response.MemberResponseDto.ProfileResponseDto;
 
 @Service
 @Slf4j
@@ -55,15 +53,15 @@ public class MemberService {
     @Transactional
     public MemberAuthResponseDto signup(MemberSignupRequestDto memberSignupRequestDto) {
         if(memberRepository.findByUsername(memberSignupRequestDto.getUsername()).isPresent()) {
-            throw new RuntimeException("이미 존재하는 닉네임입니다.");
+            throw new CustomCommonException(ErrorCode.DUPLICATE_USERNAME);
         }
 
         if(memberRepository.findByEmail(memberSignupRequestDto.getEmail()).isPresent()) {
-            throw new RuntimeException("이미 존재하는 이메일입니다.");
+            throw new CustomCommonException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         if(!memberSignupRequestDto.getPassword().equals(memberSignupRequestDto.getPasswordConfirm())){
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new CustomCommonException(ErrorCode.BAD_PARAMETER);
         }
 
         passwordEncode(memberSignupRequestDto);
@@ -78,11 +76,11 @@ public class MemberService {
     public MemberAuthResponseDto login(MemberLoginRequestDto memberLoginRequestDto, HttpServletResponse response) {
 
         Member findMember = memberRepository.findByEmail(memberLoginRequestDto.getEmail()).orElseThrow(
-                () -> new RuntimeException("해당 이메일은 존재하지 않습니다.")
+                () -> new CustomCommonException(ErrorCode.EMAIL_NOT_FOUND)
         );
 
         if(!passwordEncoder.matches(memberLoginRequestDto.getPassword(), findMember.getPassword())){
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new CustomCommonException(ErrorCode.BAD_PARAMETER);
         }
 
         TokenDto tokenDto = jwtUtil.createAllToken(memberLoginRequestDto.getEmail());
@@ -101,15 +99,15 @@ public class MemberService {
 
     public ResponseDto<String> isExistEmail(MemberSignUpDuplicateEmailDto memberSignUpDuplicateEmailDto) {
         memberRepository.findByEmail(memberSignUpDuplicateEmailDto.getEmail()).ifPresent(member -> {
-            throw new CustomCommonException(ErrorCode.DUPLICATE_USERNAME);
+            throw new CustomCommonException(ErrorCode.DUPLICATE_EMAIL);
         });
         return ResponseDto.success("중복된 이메일이 존재하지 않습니다.");
     }
 
     public ResponseDto<String> isExistUsername(MemberSignUpDuplicateUsernameDto memberSignUpDuplicateUsernameDto) {
-//        if(memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).isPresent()) {
-//            return ResponseDto.fail("중복된 닉네임이 존재합니다.", HttpStatus.FORBIDDEN);
-//        }
+        memberRepository.findByUsername(memberSignUpDuplicateUsernameDto.getUsername()).ifPresent(member -> {
+            throw new CustomCommonException(ErrorCode.DUPLICATE_USERNAME);
+        });
         return ResponseDto.success("중복된 닉네임이 존재하지 않습니다.");
     }
 
@@ -127,8 +125,8 @@ public class MemberService {
     public ProfileResponseDto modifiedProfile(MultipartFile multipartFile, String name, String loginUser) throws IOException {
         log.info("loginUser = {}", loginUser);
         Member findMember = memberRepository.findByUsername(loginUser).orElseThrow(
-                () -> new IllegalArgumentException("유효한 회원이 아닙니다"));
-
+                () -> new CustomCommonException(ErrorCode.INVALID_USER)
+        );
         String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
 
         log.info("=============");

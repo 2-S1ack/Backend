@@ -15,7 +15,8 @@ import java.util.List;
 
 import static com.clone.s1ack.dto.request.WebSocketRequestDto.CreateRoomDto;
 import static com.clone.s1ack.dto.response.MemberResponseDto.AllRoomResponseDto;
-import static com.clone.s1ack.dto.response.RoomResponseDto.*;
+import static com.clone.s1ack.dto.response.RoomResponseDto.FindOneRoomResponseDto;
+import static com.clone.s1ack.dto.response.RoomResponseDto.createRoomResponseDto;
 
 @Controller
 @RequiredArgsConstructor
