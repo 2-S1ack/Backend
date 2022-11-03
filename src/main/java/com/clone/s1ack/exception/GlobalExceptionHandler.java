@@ -21,9 +21,15 @@ public class GlobalExceptionHandler {
     // 해당 이메일은 존재하지 않습니다.
     // 비밀번호가 일치하지 않습니다.
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ResponseDto<Object>> customIllegalArgumentException(CustomCommonException e) {
-        return new ResponseEntity<>(ResponseDto.fail(e.getStatus(), e.getHttpStatus(), e.getMessage()), e.getHttpStatus());
+//    @ExceptionHandler(IllegalArgumentException.class)
+//    public ResponseEntity<ResponseDto<Object>> customIllegalArgumentException(CustomCommonException e) {
+//        return new ResponseEntity<>(ResponseDto.fail(e.getStatus(), e.getHttpStatus(), e.getMessage()), e.getHttpStatus());
+//    }
+
+    @ExceptionHandler(CustomCommonException.class)
+    public ResponseEntity<ResponseDto<Object>> customCommonException(CustomCommonException e) {
+        return new ResponseEntity<>(ResponseDto.fail(e.getStatus(), e.getHttpStatus(), e.getMessage()),
+                                     e.getHttpStatus());
     }
 
 //    @ExceptionHandler({ Exception.class })
