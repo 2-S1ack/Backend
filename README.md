@@ -20,6 +20,29 @@
 
 <br/>
 
+---
+
+## 좋았던 점
+
+![image](https://user-images.githubusercontent.com/64416833/200171331-6ed41d62-d828-4a55-9158-869056b6c789.png)
+
+![image](https://user-images.githubusercontent.com/64416833/200171345-923af220-8f0b-470f-bea5-564d0d5d2a2f.png)
+
+![image](https://user-images.githubusercontent.com/64416833/200171354-5903cbab-6e31-4a8e-b388-2122495bf3e9.png)
+
+
+<br/>
+
+---
+
+<br/>
+
+---
+
+<br/>
+
+##
+
 ## Git Commit Convention
 - ⭐Feat : 새로운 기능 추가
 - 🐛Fix : 버그 수정
